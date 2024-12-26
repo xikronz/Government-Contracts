@@ -139,3 +139,54 @@ def setLinkIntd (ticker, start, end, freq):
 
 def setLinkEod (ticker, start, end):
     return"https://financialmodelingprep.com/api/v3/historical-price-full/"+ticker+"?from="+start+"&to="+end+"&apikey="
+
+def setPayload(page):
+    payload = {
+    "subawards": False,
+    "limit": 100,
+    "page": page, 
+    "filters": {
+        "time_period": [
+            {"start_date": "2007-10-01", "end_date": "2008-09-30"},
+            {"start_date": "2008-10-01", "end_date": "2009-09-30"},
+            {"start_date": "2009-10-01", "end_date": "2010-09-30"},
+            {"start_date": "2010-10-01", "end_date": "2011-09-30"},
+            {"start_date": "2011-10-01", "end_date": "2012-09-30"},
+            {"start_date": "2012-10-01", "end_date": "2013-09-30"},
+            {"start_date": "2013-10-01", "end_date": "2014-09-30"},
+            {"start_date": "2014-10-01", "end_date": "2015-09-30"},
+            {"start_date": "2015-10-01", "end_date": "2016-09-30"},
+            {"start_date": "2016-10-01", "end_date": "2017-09-30"},
+            {"start_date": "2017-10-01", "end_date": "2018-09-30"},
+            {"start_date": "2018-10-01", "end_date": "2019-09-30"},
+            {"start_date": "2019-10-01", "end_date": "2020-09-30"},
+            {"start_date": "2020-10-01", "end_date": "2021-09-30"},
+            {"start_date": "2021-10-01", "end_date": "2022-09-30"},
+            {"start_date": "2022-10-01", "end_date": "2023-09-30"},
+            {"start_date": "2023-10-01", "end_date": "2024-09-30"}, 
+            {"start_date": "2024-10-01", "end_date": "2025-09-30"}
+        ],
+        "award_amounts": [{"lower_bound":"25000000"}],
+        "award_type_codes": ["A", "B", "C", "D"],
+        "naics_codes": [
+            "11", "21", "22", "23", "31", "32", "33", "4233", "4235", "4238", "4246", "4247",
+            "5111", "5112", "5121", "5122", "5151", "5152", "5161", "5171", "5172", "5173", "5174",
+            "5175", "5179", "5181", "5182", "5191", "52", "54"
+        ],
+        "recipient_type_names": [
+            "business", "corporate_entity_not_tax_exempt", "other_than_small_business",
+            "subchapter_s_corporation", "partnership_or_limited_liability_partnership", 
+            "limited_liability_corporation", "sole_proprietorship", "corporate_entity_tax_exempt", 
+            "manufacturer_of_goods"
+        ]
+    },
+    "fields": [
+        "Award ID", "Recipient Name", "Award Amount", "Total Outlays", "Description", 
+        "Contract Award Type", "def_codes", "COVID-19 Obligations", "COVID-19 Outlays", 
+        "Infrastructure Obligations", "Infrastructure Outlays", "Awarding Agency", 
+        "Awarding Sub Agency", "Start Date", "End Date", "recipient_id", "prime_award_recipient_id"
+    ],
+    "order": "desc",
+    "sort": "Award Amount"
+    }
+    return payload
