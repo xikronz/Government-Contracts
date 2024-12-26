@@ -2,6 +2,7 @@ from openai import OpenAI
 import time
 import pandas as pd
 from groq import Groq
+import openai
 
 client = OpenAI(api_key="")
 
