@@ -1,3 +1,10 @@
+from openai import OpenAI
+import time
+import pandas as pd
+from groq import Groq
+
+client = OpenAI(api_key="")
+
 def getTickerGPT(company):
     completion = client.chat.completions.create(
     model="gpt-4o",
