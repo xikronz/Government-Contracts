@@ -3,6 +3,14 @@ import time
 import pandas as pd
 from groq import Groq
 import openai
+from pandas.tseries.holiday import USFederalHolidayCalendar
+from pandas.tseries.offsets import CustomBusinessDay
+
+def getBuyDay(contractDate, prev):
+    uBday = CustomBusinessDay(calendar=USFederalHolidayCalendar())
+    contractDate = pd.Timestamp(contractDate)
+    buyDay = contractDate - prev * uBday
+    return buyDay.strftime('%Y-%m-%d')
 
 client = OpenAI(api_key="")
 
