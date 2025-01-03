@@ -7,15 +7,15 @@ import math
 import time 
 import uuid
 
-from utils.utils import setLinkEod, setLinkIntd, getBuyDay
+from utils.utils import setLinkEod, setLinkIntd, getBuyDay, getTradingDay
 
-contracts17 = pd.read_csv("data/portfolioTesting/c16.csv")
-contracts17['Start Date']= pd.to_datetime(contracts17['Start Date'])
-contracts17=contracts17.drop_duplicates(subset='Award ID').sort_values(by='Start Date')
+contracts16 = pd.read_csv("data/portfolioTesting/c16.csv")
+contracts16['Start Date']= pd.to_datetime(contracts16['Start Date'])
+contracts16=contracts16.drop_duplicates(subset='Award ID').sort_values(by='Start Date')
 
 from dataclasses import dataclass 
 import uuid
-exceptions = []
+
 
 # datastructure to track trades made on the same underlying via contractID 
 @dataclass
@@ -31,8 +31,8 @@ class uniqueId:
 class BenchmarkPortfolio:
     """ a benchmarked portfolio that mimicks all trades from the strategy using the SP500 
         
-        @params c: starting capital 
-        @params w: percentage of capital allocated per trade 
+        @c: starting capital 
+        @w: percentage of capital allocated per trade 
 
         id: a unique 6 digit number to keep track of the portfolio when multithreading
         buys: a list of trades made on the SP500 
@@ -47,9 +47,9 @@ class BenchmarkPortfolio:
         self.weight = w
         self.trades = []
         self.valuation = [c]
+        self.exceptions = []
         self.holds = False
         self.bankrupt = False
-        self.exeptions = []
         
     def buy(self, pps, shares, id, buyDate):
         if self.capital >= pps*shares: 
@@ -80,13 +80,32 @@ class BenchmarkPortfolio:
     def sellSuccessful(self):
         self.holds = False
 
+    def isClear (self):
+        return not self.holds
+
+    def logError (self, e, t, d, id, isSale, func): 
+        """ logs exceptions in the portfolio's exceptions list and prints to CLI
+
+            @e: the exception that was raised
+            @t: the ticker of the underlying asset
+            @d: the date of the transaction
+            @id: the contractID that was being processed
+            @isSale: boolean flag to indicate if the error was on a sell order
+        """
+        if isSale: 
+            log = f"Unexpected error: {str(e)} when trying to sell at {func} for {t} on {d} via contractID: {id}"
+        else:
+            log = f"Unexpected error: {str(e)} on trying to buy at {func} for {t} on {d} via contractID: {id}"
+        self.exceptions.append(log)
+        print(log)
+
 class Portfolio(BenchmarkPortfolio) : 
     """ a simulated portfolio that automatcally purchases and sells 
         assets using the government contracts + MR strategy 
 
-        @params z: mean reversion z-score treshold to sell
-        @params w: percentage of capital allocated to each trade 
-        @params c: starting capital
+        @z: mean reversion z-score treshold to sell
+        @w: percentage of capital allocated to each trade 
+        @c: starting capital
 
         trades: a dictionary to track all trades made on the same underlying
     """
@@ -103,18 +122,13 @@ class Portfolio(BenchmarkPortfolio) :
                         
     def buy(self, ticker, pps, shares, id, buyDate): 
         if self.capital >= pps*shares: 
-            if self.holds == False: 
-                self.capital -= pps*shares
-                self.logTrade(self, self.trades, ticker, id, shares)
-                self.buys.append([transaction(id, shares), buyDate])
-                self.holds = True
-                self.valueation.append(self.capital)
-                print(f"B{shares}{ticker}{pps}D{buyDate}")
-                return True
-            else: 
-                print ("there are pending market positions to be cleared")
-                return False 
-
+            self.capital -= pps*shares
+            self.logTrade(ticker, id, shares)
+            #self.buys.append([transaction(id, shares), buyDate])
+            self.holds = True
+            self.valuation.append(self.capital)
+            print(f"B{shares}{ticker}{pps}D{buyDate}")
+            return True
         else: 
             print("insufficient capital to complete transaction")
             self.bankrupt = True   
@@ -129,107 +143,153 @@ class Portfolio(BenchmarkPortfolio) :
                     self.trades[ticker].remove(transaction) 
                     print(f"B{shares}{ticker}{pps}D{sellDate}")
 
-def logError (e, contractID, date, isSale, ticker): 
-    """ logs exceptions in the global exceptions list and prints to CLI
+def getPricePerShare(p: BenchmarkPortfolio, t: str, date: str, id:str, isSale: bool):
+    """ filters API calls to return the pps of the stock 45 minutes before closing on a given date, only 
+        used for buy orders 
+        requires: date is a us Trading Day
 
-        @params e: the exception that was raised
-        @params contractID: the contractID that was being processed
-        @params date: the date of the transaction
-        @params isSale: boolean flag to indicate if the error was on a sell order
-        @params ticker: the ticker of the underlying asset
+        @p: the portfolio object that is making the trade
+        @t: stock ticker 
+        @date: date of the trade
+        @id: contractID triggering the trade 
+        @isSale: flag to determine if the trade is a buy or sell
     """
-    global exceptions
-    if isSale: 
-        log = f"Unexpected error: {str(e)} on sell order of {ticker} on {date} via contractID: {contractID}"
-    else:
-        log = f"Unexpected error: {str(e)} on buy order of {ticker} on {date} via contractID: {contractID}"
-    exceptions.append(log)
-    print(log)
+    numtries = 0
+    
+    try:
+        while numtries <= 3:
+            response = requests.get(url=setLinkIntd(t, date, date, "5min"))
 
-def getPricePerShare(ticker, date, id, isSale):
-    """ filters API calls to return the pps of the stock 45 minutes before closing on a given date,  
-        
-        @params ticker: stock ticker 
-        @params date: date of the trade
-        @params id: contractID triggering the trade 
-        @params isSale: flag to determine if the trade is a buy or sell
+            if response.status_code == 200:
+                try:
+                    jsonData = response.json()
+                    if len(jsonData) > 15:
+                        pps = jsonData[-15]["open"]
+                        return pps
+                    elif len(jsonData) == 0:
+                        response = requests.get(url=setLinkEod(t, date, date))
+                        pps = response.json()['historical'][0]['close']
+                        return pps
+                except KeyError as e:
+                     p.logError(e, t, date, id, isSale)
+                     return None
+                except Exception as e:
+                    p.logError(e, t, date, id, isSale)
+                    return None
+            elif response.status_code == 429:
+                time.sleep(60)
+                print(f"Too many API calls exception, waiting until minute reset. current attempt: {numtries}")
+                numtries += 1
+            else:
+                p.logError(response.status_code, t, date, id, isSale, "getPricePerShare")
+                return None
+    except Exception as e: 
+            p.logError(e, t, date, id, isSale, "getPricePerShare")
+            return None 
+    
+def getHistorical(p:BenchmarkPortfolio, t:str, s:str, e:str, id) -> pd.DataFrame:
+    """ returns a pd.Dataframe of the opening prices of the stock over a given time period [s, e] 
+
+        @p: the portfolio object making a trade 
+        @t: stock ticker of the underlying
+        @s: starting period
+        @e: end 
+        @id: contract id triggering the trade
     """
-    global exceptions
+    
     numtries = 0
 
-    while numtries <= 3:
-        response = requests.get(url=setLinkIntd(ticker, date, date, "5min"))
+    try:
+        while numtries <=3: 
+            response = requests.get(url=setLinkIntd(t, s, e, "5min"))
+            if response.status_code == 200: 
+                data = response.json()
+                if len(data)==0: 
+                    print(data)
+                    try:
+                        response = requests.get(setLinkEod(t, s, e))
+                        data = response.json()['historical']
+                    except Exception as e: 
+                        p.logError(e, t, s, id, True, "getHistorical")
+                        return pd.DataFrame()
+                if len(data)!= 0:
+                    prices = pd.DataFrame([entry['close'] for entry in data])
+                    return prices 
+            elif response.status_code == 429: 
+                time.sleep(60)
+                print(f"Too many API calls exception, waiting until minute reset. current attempt: {numtries}")
+                numtries +=1
+            else: 
+                p.logError(response.status_code, t, s, id, True, "getHistorical")
+                return pd.DataFrame()              
+    except Exception as e: 
+        p.logError(e, t, s, id, True, "getHistorical")
+        return pd.DataFrame() 
+    
+def meanReversion(miu, sigma, currentPps, zScore): 
+    z = abs((miu-currentPps)/sigma)
+    return z>=zScore
 
-        if response.status_code == 200:
-            try:
-                json_data = response.json()
-                if len(json_data) == 0:
-                    response = requests.get(url=setLinkEod(ticker, date, date))
-                    pps = response.json()['historical'][0]['close']
-                    return pps
-                elif len(json_data) > 15:
-                    pps = json_data[-15]["open"]
-                    return pps
-            except Exception as e:
-                logError(e, id, date, isSale, ticker)
-                return None
-        elif response.status_code == 429:
-            time.sleep(60)
-            print(f"Too many API calls exception, waiting until minute reset. current attempt: {numtries}")
-            numtries += 1
-        else:
-            logError(response.status_code, id, date, isSale, ticker)
-            return None
-    return None
+def getSellDay(p: BenchmarkPortfolio, ticker: str, date: str, zScore, id, window):
+    startDay = getTradingDay(pd.to_datetime(date)-pd.Timedelta(days=window))
+    endDay = getTradingDay(pd.to_datetime(date)-pd.Timedelta(days=1))
+    currentDay = date
 
-def meanReversion(): 
-    pass 
-
-def getSellDay(date, zScore, ticker):
-    pass
-
-def executeOrder(portfolio, benchPortfolio, w, ticker, date, id, isSale): 
+    historic = getHistorical(p, ticker, startDay, endDay, id)
+    
+    if (not historic.empty and len(historic)>= window): 
+        sma = historic.rolling(window=window).mean()
+        stDev = historic.rolling(window=window).std() 
+        while True: 
+            currentPps = getPricePerShare(p, ticker, currentDay, id, True)
+            if meanReversion(sma, stDev, zScore, currentPps):
+                return currentDay
+            else: 
+                currentDay = getTradingDay(pd.to_datetime(currentDay) + pd.Timedelta(days=1))
+    else:
+        return None 
+    
+def executeOrder(portfolio: Portfolio, benchPortfolio: BenchmarkPortfolio, w: float, ticker: str, date: str, id: int, isSale: bool) -> bool:
     """ executes a buy or sell order on the portfolio and benchmark portfolio 
 
-        @params portfolio: the portfolio to execute the order on 
-        @params benchPortfolio: the benchmark portfolio to execute the order on 
-        @params w: the percentage of capital to allocate to the trade 
-        @params ticker: the ticker of the underlying asset 
-        @params date: the date of the trade 
-        @params id: the contractID triggering the trade 
-        @params isSale: flag to determine if the trade is a buy or sell
+        @portfolio: the strategy's portfolio to execute the order on 
+        @benchPortfolio: the benchmark SPX portfolio to execute the order on 
+        @w: the percentage of capital to allocate to the trade 
+        @ticker: the ticker of the underlying asset 
+        @date: the date of the trade 
+        @id: the contractID triggering the trade 
+        @isSale: flag to determine if the trade is a buy or sell
     """
-    global exceptions 
     
-    pps = getPricePerShare(ticker, date, id, isSale)
-    ppsSPX = getPricePerShare("^SPX", date, id, isSale)
+    pps = getPricePerShare(portfolio, ticker, date, id, isSale)
+    ppsSPX = getPricePerShare(benchPortfolio, "^SPX", date, id, isSale)
 
     if (pps!=None and ppsSPX!=None): 
-        if isSale:
-            shares = math.floor((w*portfolio.capital)/pps)
-            sharesSPX = math.floor((w*benchPortfolio.capital)/ppsSPX)
-            portfolio.buy(ticker, pps, shares, id, date)
-            benchPortfolio.buy(ppsSPX, sharesSPX, id, date)            
-            return True 
+        if not isSale:
+            if (portfolio.isClear and benchPortfolio.isClear):
+                shares = math.floor((w*portfolio.capital)/pps)
+                sharesSPX = math.floor((w*benchPortfolio.capital)/ppsSPX)
+                portfolio.buy(ticker, pps, shares, id, date)
+                benchPortfolio.buy(ppsSPX, sharesSPX, id, date)            
+                return True 
+            else:
+                return False 
         else: 
             portfolio.sell(pps, id, ticker, date)
             benchPortfolio.sell(pps, id, date)
-            portfolio.sellSuccessful()
-            benchPortfolio.sellSuccessful()
             return True 
-    else:
-        return False
-    
-def runPortfolio(contracts, z, w, c, bSig): 
+    return False 
+
+def runPortfolio(contracts, z, w, c, bSig, window): 
     """ runs the portfolio simulation on the given contracts 
 
-        @params contracts: dataframe of contracts 
-        @params z: mean reversion z-score treshold
-        @params w: weight of total capital to allocate to each trade 
-        @params c: initial capital 
-        @params bSig: days before contract start date to buy
+        @contracts: dataframe of contracts 
+        @z: mean reversion z-score treshold
+        @w: weight of total capital to allocate to each trade 
+        @c: initial capital 
+        @bSig: days before contract start date to buy
     """
-    global exceptions 
+    results = []
     strategyPortfolio = Portfolio(z, w, c)
     spxBenchmark = BenchmarkPortfolio(c, w)
 
@@ -239,7 +299,17 @@ def runPortfolio(contracts, z, w, c, bSig):
         id = contracts.iloc[i]['internal_id']
         buyDay = getBuyDay(contractStart, bSig)
         if (executeOrder(strategyPortfolio, spxBenchmark, w, tick, buyDay, id, False)): 
-            sellDay = getSellDay(buyDay, z, tick)
-            executeOrder(strategyPortfolio, spxBenchmark, w, tick, contractStart, id, True)
+            sellDay = getSellDay(strategyPortfolio, tick, buyDay, z, id, window)
+            if (sellDay != None):
+                if (executeOrder(strategyPortfolio, spxBenchmark, w, tick, sellDay, id, True)):
+                    strategyPortfolio.sellSuccessful()
+                    spxBenchmark.sellSuccessful()
+                else: 
+                    break
         else:
             break 
+    """results.append(strategyPortfolio)
+    results.append(spxBenchmark)
+    return results"""
+
+    temp = runPortfolio(contracts16, 1.5, 0.1, 100000000, 3, 20)

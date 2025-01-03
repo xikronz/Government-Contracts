@@ -149,11 +149,11 @@ def getPublicContractsGPT(contractDf):
 
 
 def setLinkIntd (ticker, start, end, freq):
-    link="https://financialmodelingprep.com/api/v3/historical-chart/"+freq+"/"+ticker+"?from="+start+"&to="+end+"&apikey="
+    link="https://financialmodelingprep.com/api/v3/historical-chart/"+freq+"/"+ticker+"?from="+start+"&to="+end+"&apikey=26srycwxWrFIhEuaZwic6mBdx7f4VjGT"
     return link
 
 def setLinkEod (ticker, start, end):
-    return"https://financialmodelingprep.com/api/v3/historical-price-full/"+ticker+"?from="+start+"&to="+end+"&apikey="
+    return"https://financialmodelingprep.com/api/v3/historical-price-full/"+ticker+"?from="+start+"&to="+end+"&apikey=26srycwxWrFIhEuaZwic6mBdx7f4VjGT"
 
 def setPayload(page):
     payload = {
