@@ -18,6 +18,8 @@ def getTradingDay(date) -> str:
     adjDate = dateTime if us_business_day.is_on_offset(dateTime) else dateTime + us_business_day
     return adjDate.strftime('%Y-%m-%d') 
 
+def addUsBusinessDay():
+    return CustomBusinessDay(calendar=USFederalHolidayCalendar())
 
 client = OpenAI(api_key="")
 
