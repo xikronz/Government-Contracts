@@ -6,11 +6,18 @@ import openai
 from pandas.tseries.holiday import USFederalHolidayCalendar
 from pandas.tseries.offsets import CustomBusinessDay
 
-def getBuyDay(contractDate, prev):
+def getBuyDay(contractDate, prev)-> str:
     uBday = CustomBusinessDay(calendar=USFederalHolidayCalendar())
     contractDate = pd.Timestamp(contractDate)
     buyDay = contractDate - prev * uBday
     return buyDay.strftime('%Y-%m-%d')
+
+def getTradingDay(date) -> str:
+    us_business_day = CustomBusinessDay(calendar=USFederalHolidayCalendar())
+    dateTime = pd.Timestamp(date)
+    adjDate = dateTime if us_business_day.is_on_offset(dateTime) else dateTime + us_business_day
+    return adjDate.strftime('%Y-%m-%d') 
+
 
 client = OpenAI(api_key="")
 
