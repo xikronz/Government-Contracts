@@ -6,6 +6,9 @@ import openai
 from pandas.tseries.holiday import USFederalHolidayCalendar
 from pandas.tseries.offsets import CustomBusinessDay
 
+usBday = CustomBusinessDay(calendar=USFederalHolidayCalendar())
+
+
 def getBuyDay(contractDate, prev)-> str:
     uBday = CustomBusinessDay(calendar=USFederalHolidayCalendar())
     contractDate = pd.Timestamp(contractDate)
@@ -151,11 +154,13 @@ def getPublicContractsGPT(contractDf):
 
 
 def setLinkIntd (ticker, start, end, freq):
-    link="https://financialmodelingprep.com/api/v3/historical-chart/"+freq+"/"+ticker+"?from="+start+"&to="+end+"&apikey=26srycwxWrFIhEuaZwic6mBdx7f4VjGT"
-    return link
+    return f"https://financialmodelingprep.com/api/v3/historical-chart/{freq}/{ticker}?from={start}&to={end}&apikey=26srycwxWrFIhEuaZwic6mBdx7f4VjGT"
 
 def setLinkEod (ticker, start, end):
-    return"https://financialmodelingprep.com/api/v3/historical-price-full/"+ticker+"?from="+start+"&to="+end+"&apikey=26srycwxWrFIhEuaZwic6mBdx7f4VjGT"
+    return f"https://financialmodelingprep.com/api/v3/historical-price-full/{ticker}?from={start}&to={end}&apikey=26srycwxWrFIhEuaZwic6mBdx7f4VjGT"
+
+def setLinkRatios (ticker):
+    return f"https://financialmodelingprep.com/api/v3/ratios/{ticker}?period=quarter&apikey=26srycwxWrFIhEuaZwic6mBdx7f4VjGT"
 
 def setPayload(page):
     payload = {
