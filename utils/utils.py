@@ -9,6 +9,11 @@ from pandas.tseries.offsets import CustomBusinessDay
 
 usBday = CustomBusinessDay(calendar=USFederalHolidayCalendar())
 
+def withinQuarter(currentDay, candidateQuarter):
+    currentDay = pd.to_datetime(currentDay)
+    candidateQuarter = pd.to_datetime(candidateQuarter)
+    return abs((currentDay - candidateQuarter).days) < 91
+
 
 def getBuyDay(contractDate, prev)-> str:
     uBday = CustomBusinessDay(calendar=USFederalHolidayCalendar())
