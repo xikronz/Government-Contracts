@@ -168,16 +168,15 @@ def setLinkEod (ticker, start, end):
 def setLinkRatios (ticker):
     return f"https://financialmodelingprep.com/api/v3/ratios/{ticker}?period=quarter&apikey=26srycwxWrFIhEuaZwic6mBdx7f4VjGT"
 
-def setLinkCik (ticker):
-    return f"https://financialmodelingprep.com/api/v4/mapper-cik-company/{ticker}?apikey=26srycwxWrFIhEuaZwic6mBdx7f4VjGT"
+def setLinkIncomeStatement (ticker):
+    return f"https://financialmodelingprep.com/api/v3/income-statement/{ticker}?period=quarter&apikey=26srycwxWrFIhEuaZwic6mBdx7f4VjGT"
 
-def getCik (ticker):
-    response = requests.get(url=setLinkCik(ticker))
-    if response.status_code == 200:
-        cik = response.json()['companyCik'] or 0 
-    else:
-        cik =0
-    return cik 
+def setLinkBalanceSheet (ticker):
+    return f"https://financialmodelingprep.com/api/v3/balance-sheet-statement/{ticker}?period=quarter&apikey=26srycwxWrFIhEuaZwic6mBdx7f4VjGT"
+
+def setLinkFinancialStatement (ticker):
+    return f"https://financialmodelingprep.com/api/v3/financial-statement-full-as-reported/{ticker}?period=quarter&limit=50&apikey=26srycwxWrFIhEuaZwic6mBdx7f4VjGT"
+
 
 def setPayload(page):
     payload = {
