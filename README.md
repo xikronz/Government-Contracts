@@ -5,10 +5,12 @@ Every year, the United-States Federal Government spends over 600 Billion dollars
 ![Screenshot from 2024-12-25 22-30-37](https://github.com/user-attachments/assets/7d77d509-43d3-443f-8833-83c3691804a8)
 
 # Backtested Returns FY16-FY19, FY23, FY24 
-![Screenshot from 2025-02-03 00-50-43](https://github.com/user-attachments/assets/8e610b93-a04a-4417-ab02-5ee8c8f5c2cf)
+Spotlight performance duirng FY 23
+![Screenshot from 2025-02-03 10-42-40](https://github.com/user-attachments/assets/41725f2f-64ec-4225-b024-d4156f8cc8b3)
 
+![Screenshot from 2025-02-03 10-43-02](https://github.com/user-attachments/assets/a4008c6e-a9ba-4a24-8811-4dc4a8c45e9a)
 
-![Screenshot from 2025-02-03 01-04-36](https://github.com/user-attachments/assets/fbe46c73-e2cc-4bd0-a34f-d6ee3ad6fa6d)
+# Strategy at a Glance 
+![Screenshot from 2025-02-03 10-40-26](https://github.com/user-attachments/assets/6f6047b0-8981-4feb-8430-2a1892137ebb)
 
-# Alpha 
 
