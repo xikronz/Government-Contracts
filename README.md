@@ -14,4 +14,8 @@ Spotlight performance duirng FY 23 with the highest earning single trade being a
 # Strategy at a Glance 
 ![Screenshot from 2025-02-03 10-40-26](https://github.com/user-attachments/assets/6f6047b0-8981-4feb-8430-2a1892137ebb)
 
+# Investment risks and remarks
+![Screenshot from 2025-02-03 11-28-48](https://github.com/user-attachments/assets/60b56e7d-fe0f-4677-acc8-c81a61f71fb5)
+
+
 
