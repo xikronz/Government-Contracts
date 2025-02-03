@@ -6,7 +6,7 @@ Every year, the United-States Federal Government spends over 600 Billion dollars
 
 # Backtested Returns FY16-FY19, FY23, FY24 
 Spotlight performance duirng FY 23
-![Screenshot from 2025-02-03 10-42-40](https://github.com/user-attachments/assets/41725f2f-64ec-4225-b024-d4156f8cc8b3)
+![Screenshot from 2025-02-03 11-14-14](https://github.com/user-attachments/assets/9bb79e34-ec8a-4382-b490-7c90ff7e9048)
 
 ![Screenshot from 2025-02-03 10-43-02](https://github.com/user-attachments/assets/a4008c6e-a9ba-4a24-8811-4dc4a8c45e9a)
 
