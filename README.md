@@ -1,5 +1,5 @@
 # Event driven trading: a Mean Reversion-Based Sell strategy triggered by Governent Contracts
-Every year, the United-States Federal Government spends over **$600 Billion** on contracting projects with large-bap, mid-cap and small-cap businesses, making it one of the most lucrative expenditures in the global economy. Over the past decade, an avergage of **57.31%** of it's top 100 recipients were corporations that are **publically traded** on US stock exchanges. 
+Every year, the United-States Federal Government spends over **$600 Billion** on contracting projects with large-cap, mid-cap and small-cap businesses, making it one of the most lucrative expenditures in the global economy. Over the past decade, an avergage of **57.31%** of it's top 100 recipients were corporations that are **publically traded** on US stock exchanges. 
 
 Despite the scale of these expenditures, retail investors often overlook federal contracting trends as a factor in stock selection. Many firms receive billions in government contracts annually, securing stable revenue streams that can mitigate risk during economic downturns and enhance long-term growth prospects. In section 5, **capital allocation**, we go over how the inpact of a contract on fundemental performances is projected using a **sigmoid composition** of $\Delta$ EBITDA, $\Delta$ margins, $\Delta$ cash flow etc... 
 
@@ -16,13 +16,13 @@ With final normalized **annual return of 189.6%**, Sharpe ratio of 5.852, and ma
 # Behind the Scenes of a Multi-Billion Dollar Operation 
 ![Screenshot from 2024-12-25 22-30-37](https://github.com/user-attachments/assets/7d77d509-43d3-443f-8833-83c3691804a8)
 
-# Backtested Returns FY16-FY19, FY23, FY24 
-Spotlight performance duirng FY 23 with the highest earning single trade being a +11.23% on 8542116 shares of LDOS @95.06/share, exposing 10% of the portfolio from 2023-10-11 to 2013-11-22 when position closed @106.12/share.
+# Backtested Returns FY16-FY19, FY23 
+Spotlight performance duirng FY 23 with the highest earning single trade being a +11.23% on 8542116 shares of LDOS @95.06/share on 11-10-2013, exposing 10% of the portfolio until 22-11-2013 when positions closed @106.12/share.
 
 ![Screenshot from 2025-02-03 11-18-08](https://github.com/user-attachments/assets/6a41d91d-423b-4033-ba90-e4334e740e09)
 
-## Returns over FY216-19
-Although 2018 presented challenges, with a negative Sharpe ratio (-0.6712) and a maximum drawdown of -20.41%, the strategy remained ITM within a bearish market.
+## Returns over FY16-19
+Although 2018 presented challenges, with a negative Sharpe ratio (-0.6712) and a maximum drawdown of -20.41%, the strategy closed in the money at +94.75% while navigating a bearish market.
 ![Screenshot from 2025-02-03 10-43-02](https://github.com/user-attachments/assets/a4008c6e-a9ba-4a24-8811-4dc4a8c45e9a)
 
 # Strategy at a Glance 
