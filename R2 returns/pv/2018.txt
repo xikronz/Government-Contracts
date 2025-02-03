@@ -30,12 +30,6 @@ B1135336RTX130.61D2018-01-05$--1334576611.3642998
 S1135336RTX127.04D2018-02-09$--1478809696.8042998
 B1011566LHX146.19D2018-01-09$--1330928863.2642999
 S1011566LHX151.82D2018-02-09$--1484504813.3842998
-Too many API calls exception, waiting until minute reset. current attempt: 0
-Too many API calls exception, waiting until minute reset. current attempt: 1
-Unexpected error: 'historical' on trying to buy at getPricePerShare for J, AMZN on 2018-01-02 via contractID: 62535423
-Too many API calls exception, waiting until minute reset. current attempt: 0
-Too many API calls exception, waiting until minute reset. current attempt: 1
-Unexpected error: 'historical' on trying to buy at getPricePerShare for J none on 2018-01-02 via contractID: 62635006
 B2273187RTX130.61D2018-01-05$--1187603859.3142996
 S2273187RTX127.04D2018-02-09$--1476389535.7942996
 B2260760RTX130.61D2018-01-05$--1181111672.1942997
@@ -190,9 +184,6 @@ B826307IBM156.69D2018-03-01$--1165267533.4452996
 S826307IBM156.38D2018-04-10$--1294485422.1052997
 B1920601LDOS67.4D2018-03-08$--1165036914.7052996
 S1920601LDOS61.985D2018-06-05$--1284085367.6902995
-Too many API calls exception, waiting until minute reset. current attempt: 0
-Too many API calls exception, waiting until minute reset. current attempt: 1
-Unexpected error: 'historical' on trying to buy at getPricePerShare for J, JBI on 2018-02-27 via contractID: 66424346
 B376575LMT340.99D2018-03-26$--1155677058.4402995
 S376575LMT346.8539D2018-04-24$--1286293565.8327994
 B372687NOC345.14D2018-03-29$--1157664374.6527994
@@ -263,9 +254,6 @@ B2021660RTX124.48D2018-04-18$--1006625373.713099
 S2021660RTX123.36D2018-05-10$--1256017351.313099
 B2018022RTX124.48D2018-04-18$--1004813972.753099
 S2018022RTX123.36D2018-05-10$--1253757166.673099
-Too many API calls exception, waiting until minute reset. current attempt: 0
-Too many API calls exception, waiting until minute reset. current attempt: 1
-Unexpected error: 'historical' on trying to buy at getPricePerShare for GR on 2018-03-20 via contractID: 66880128
 B2022678LDOS61.985D2018-06-05$--1128381470.843099
 S2022678LDOS61.985D2018-06-05$--1253757166.673099
 B2274595GE110.24D2018-04-17$--1003005813.8730991
